@@ -66,8 +66,6 @@ plus(total)
 three(total,tlastindex)
 multiply(total)
 nine(total,tlastindex)
-
 enter(result,total,tlastindex)
 
-print(total)
 
