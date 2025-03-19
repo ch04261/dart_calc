@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:math_expressions/math_expressions.dart';
 
 double evalExpression(String expr) {
@@ -7,59 +8,70 @@ double evalExpression(String expr) {
   return exp.evaluate(EvaluationType.REAL, cm);
 }
 
-List<List<dynamic>> total = [[]];
+List<dynamic> total = [[]];
 int tlastindex = total.length - 1;
 var result = 0;
-String number = "";
+double result2 = 0;
+void setstate()
 
-void process(String number, List<List<dynamic>> total, int tlastindex) {
+void process() {
   tlastindex = total.length - 1; // 마지막 인덱스 계산
-  number = total[tlastindex]
+  String number = total[tlastindex]
       .map((n) => n.toString())
       .toList()
       .join(""); // 리스트를 문자열로 합침
+  int number2 = int.parse(number);
   total.removeAt(tlastindex); // 마지막 리스트 제거
-  total.add([int.parse(number)]); // 합친 문자열을 정수로 변환하여 새 리스트에 추가
+
+  total.add(number2);
 }
 
 void enter() {
-  process(number, total, tlastindex);
+  process();
   String result = total
       .map((n) => n.toString())
       .toList()
       .join(""); // 숫자들을 문자열로 합침
-  print(evalExpression(result)); // 수식 계산
+  result2 = evalExpression(result); // 수식 계산
+  //print(evalExpression(result)); // 수식 계산
 }
-
-void plus(List<List<dynamic>> total) {
-  process(number, total, tlastindex);
-  total.add(['+']); // '+' 연산자 추가
+void delete(){
+  total = [[]];
+}
+void plus() {
+  process();
+  total.add('+'); // '+' 연산자 추가
   total.add([]); // 새로운 리스트 추가
 }
 
-void minus(List<List<dynamic>> total) {
-  process(number, total, tlastindex);
-  total.add(['-']); // '-' 연산자 추가
+void minus() {
+  process();
+  total.add('-'); // '-' 연산자 추가
   total.add([]); // 새로운 리스트 추가
 }
 
-void multiply(List<List<dynamic>> total) {
-  process(number, total, tlastindex);
-  total.add(['*']); // '*' 연산자 추가
+void multiply() {
+  process();
+  total.add('*'); // '*' 연산자 추가
   total.add([]); // 새로운 리스트 추가
 }
 
-void divide(List<List<dynamic>> total) {
-  process(number, total, tlastindex);
-  total.add(['/']); // '/' 연산자 추가
+void divide() {
+  process();
+  total.add('/'); // '/' 연산자 추가
   total.add([]); // 새로운 리스트 추가
 }
 
-void one(List<List<dynamic>> total, int tlastindex) {
+void number_make(int num) {
   tlastindex = total.length - 1;
-  total[tlastindex].add(1); // 마지막 리스트에 숫자 1 추가
+  total[tlastindex].add(num); // 마지막 리스트에 숫자 num 추가
 }
+
 
 void main() {
+  number_make(1);
+  plus();
+  number_make(1);
+  enter();
   print(total);
 }

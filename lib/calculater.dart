@@ -1,4 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:math_expressions/math_expressions.dart';
+
+double evalExpression(String expr) {
+  ShuntingYardParser p = ShuntingYardParser();
+  Expression exp = p.parse(expr);
+  ContextModel cm = ContextModel();
+  return exp.evaluate(EvaluationType.REAL, cm);
+}
+
+String result = "";
+double realresult = 0;
 
 void main() {
   runApp(const MyApp());
@@ -13,8 +24,22 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'calculater',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color.fromARGB(255, 229, 34, 8),
+        scaffoldBackgroundColor: Colors.black,
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color.fromARGB(255, 100, 98, 98),
+            foregroundColor: const Color.fromARGB(255, 202, 190, 190),
+
+            shape: CircleBorder(),
+            padding: EdgeInsets.all(10),
+            textStyle: TextStyle(
+              fontSize: 40,
+              fontWeight: FontWeight.bold, // 폰트 굵기 (볼드)
+              //fontStyle: FontStyle.italic, // 기울임꼴
+              color: const Color.fromARGB(167, 10, 49, 110),
+            ), // 텍스트 색상,
+            fixedSize: Size(80, 80),
+          ),
         ),
       ),
       home: const MyHomePage(title: 'calculater'),
@@ -32,317 +57,262 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  void number_make(String num) {
+    result = result + num;
+    setState(() {});
+  }
 
-  void _counterplus() {
-    setState(() {
-      _counter = _counter + 1;
-    });
+  void plus() {
+    result = result + "+";
+    setState(() {});
+  }
+
+  void minus() {
+    result = result + "-";
+    setState(() {});
+  }
+
+  void multi() {
+    result = result + "*";
+    setState(() {});
+  }
+
+  void divide() {
+    result = result + "/";
+    setState(() {});
+  }
+
+  void delete() {
+    result = "";
+    realresult = 0;
+    setState(() {});
+  }
+
+  void backspace() {
+    result = result.substring(0, result.length - 1);
+    setState(() {});
+  }
+
+  void enter() {
+    realresult = evalExpression(result);
+    setState(() {});
+  }
+
+  String prettier(String input) {
+    String temp = input.replaceAll('*', '×');
+    return temp.replaceAll('/', '÷');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(
-          widget.title,
-          style: TextStyle(
-            fontSize: 50,
-            color: const Color.fromARGB(128, 248, 65, 9),
-          ),
-        ),
-      ),
+      appBar: null,
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisAlignment: MainAxisAlignment.center, // 수직 정렬
+        crossAxisAlignment: CrossAxisAlignment.center, // 가로 정렬
         children: [
+          SizedBox(height: 120),
           Container(
-            width: 400,
-            height: 200,
-            padding: EdgeInsets.all(10), // 내부 여백 추가
-            decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 175, 181, 185), // 배경색
-              borderRadius: BorderRadius.circular(10), // 모서리 둥글게
+            width: 400, // 폭
+            height: 80, // 높이
+            color: const Color.fromARGB(0, 241, 12, 88), // 박스 색상
+            child: Text(
+              prettier(result),
+              textAlign: TextAlign.right,
+              style: TextStyle(
+                color: const Color.fromARGB(255, 202, 190, 190),
+                fontSize: 50,
+              ),
+            ), // 자식 위젯
+          ),
+          SizedBox(height: 20),
+          Container(
+            width: 400, // 폭
+            height: 80, // 높이
+            color: const Color.fromARGB(0, 217, 16, 83), // 박스 색상
+            child: Text(
+              realresult.toString(),
+              textAlign: TextAlign.right,
+              style: TextStyle(
+                color: const Color.fromARGB(255, 202, 190, 190),
+                fontSize: 50,
+              ),
             ),
-            child: _counter,
+            // 자식 위젯
           ),
+
+          SizedBox(height: 20),
           Row(
-            //7,8,9 가로줄
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.center, // 수직 정렬
+            crossAxisAlignment: CrossAxisAlignment.center, // 가로 정렬
             children: [
-              Container(
-                width: 75,
-                height: 75,
-                padding: EdgeInsets.all(10), // 내부 여백 추가
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 183, 193, 201), // 배경색
-                  shape: BoxShape.circle, // 모서리 둥글게
-                ),
-                child: Center(
-                  child: Text(
-                    "0",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                      color: const Color.fromARGB(255, 8, 8, 8),
-                    ),
-                  ),
-                ),
+              ElevatedButton(
+                onPressed: () {
+                  delete();
+                },
+                child: Text('AC'),
               ),
-              Container(
-                width: 75,
-                height: 75,
-                padding: EdgeInsets.all(10), // 내부 여백 추가
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 183, 193, 201), // 배경색
-                  shape: BoxShape.circle, // 모서리 둥글게
-                ),
-                child: Center(
-                  child: Text(
-                    "0",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                      color: const Color.fromARGB(255, 8, 8, 8),
-                    ),
-                  ),
-                ),
+              SizedBox(width: 20),
+              ElevatedButton(onPressed: () {}, child: Text('')),
+              SizedBox(width: 20),
+              ElevatedButton(
+                onPressed: () {
+                  backspace();
+                },
+                child: Text('C'),
               ),
-              Container(
-                width: 75,
-                height: 75,
-                padding: EdgeInsets.all(10), // 내부 여백 추가
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 183, 193, 201), // 배경색
-                  shape: BoxShape.circle, // 모서리 둥글게
+              SizedBox(width: 20),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(255, 5, 14, 98),
                 ),
-                child: Center(
-                  child: Text(
-                    "0",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                      color: const Color.fromARGB(255, 8, 8, 8),
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                width: 75,
-                height: 75,
-                padding: EdgeInsets.all(10), // 내부 여백 추가
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 183, 193, 201), // 배경색
-                  shape: BoxShape.circle, // 모서리 둥글게
-                ),
-                child: Center(
-                  child: Text(
-                    "0",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                      color: const Color.fromARGB(255, 8, 8, 8),
-                    ),
-                  ),
-                ),
+                onPressed: () {
+                  divide();
+                },
+                child: Text('÷'),
               ),
             ],
           ),
+          SizedBox(height: 20),
           Row(
-            //7,8,9 가로줄
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.center, // 수직 정렬
+            crossAxisAlignment: CrossAxisAlignment.center, // 가로 정렬
             children: [
-              Container(
-                width: 75,
-                height: 75,
-                padding: EdgeInsets.all(10), // 내부 여백 추가
-                decoration: BoxDecoration(
-                  color: Colors.blue, // 배경색
-                  shape: BoxShape.circle, // 모서리 둥글게
-                ),
-                child: Text("7", style: TextStyle(color: Colors.white)),
+              ElevatedButton(
+                onPressed: () {
+                  number_make('7');
+                },
+                child: Text('7'),
               ),
-              Container(
-                width: 75,
-                height: 75,
-                padding: EdgeInsets.all(10), // 내부 여백 추가
-                decoration: BoxDecoration(
-                  color: Colors.blue, // 배경색
-                  shape: BoxShape.circle, // 모서리 둥글게
-                ),
-                child: Text("8", style: TextStyle(color: Colors.white)),
+              SizedBox(width: 20),
+              ElevatedButton(
+                onPressed: () {
+                  number_make('8');
+                },
+                child: Text('8'),
               ),
-              Container(
-                width: 75,
-                height: 75,
-                padding: EdgeInsets.all(10), // 내부 여백 추가
-                decoration: BoxDecoration(
-                  color: Colors.blue, // 배경색
-                  shape: BoxShape.circle, // 모서리 둥글게
-                ),
-                child: Text("9", style: TextStyle(color: Colors.white)),
+              SizedBox(width: 20),
+              ElevatedButton(
+                onPressed: () {
+                  number_make('9');
+                },
+                child: Text('9'),
               ),
-              Container(
-                width: 75,
-                height: 75,
-                padding: EdgeInsets.all(10), // 내부 여백 추가
-                decoration: BoxDecoration(
-                  color: Colors.blue, // 배경색
-                  shape: BoxShape.circle, // 모서리 둥글게
+              SizedBox(width: 20),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(255, 5, 14, 98),
                 ),
-                child: Text("X", style: TextStyle(color: Colors.white)),
+                onPressed: () {
+                  multi();
+                },
+                child: Text('×'),
               ),
             ],
           ),
+          SizedBox(height: 20),
           Row(
-            //4,5,6 가로줄줄
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.center, // 수직 정렬
+            crossAxisAlignment: CrossAxisAlignment.center, // 가로 정렬
             children: [
-              Container(
-                width: 75,
-                height: 75,
-                padding: EdgeInsets.all(10), // 내부 여백 추가
-                decoration: BoxDecoration(
-                  color: Colors.blue, // 배경색
-                  shape: BoxShape.circle, // 모서리 둥글게
-                ),
-                child: Text("4", style: TextStyle(color: Colors.white)),
+              ElevatedButton(
+                onPressed: () {
+                  number_make('4');
+                },
+                child: Text('4'),
               ),
-              Container(
-                width: 75,
-                height: 75,
-                padding: EdgeInsets.all(10), // 내부 여백 추가
-                decoration: BoxDecoration(
-                  color: Colors.blue, // 배경색
-                  shape: BoxShape.circle, // 모서리 둥글게
-                ),
-                child: Text("5", style: TextStyle(color: Colors.white)),
+              SizedBox(width: 20),
+              ElevatedButton(
+                onPressed: () {
+                  number_make('5');
+                },
+                child: Text('5'),
               ),
-              Container(
-                width: 75,
-                height: 75,
-                padding: EdgeInsets.all(10), // 내부 여백 추가
-                decoration: BoxDecoration(
-                  color: Colors.blue, // 배경색
-                  shape: BoxShape.circle, // 모서리 둥글게
-                ),
-                child: Text("6", style: TextStyle(color: Colors.white)),
+              SizedBox(width: 20),
+              ElevatedButton(
+                onPressed: () {
+                  number_make('6');
+                },
+                child: Text('6'),
               ),
-              Container(
-                width: 75,
-                height: 75,
-                padding: EdgeInsets.all(10), // 내부 여백 추가
-                decoration: BoxDecoration(
-                  color: Colors.blue, // 배경색
-                  shape: BoxShape.circle, // 모서리 둥글게
+              SizedBox(width: 20),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(255, 5, 14, 98),
                 ),
-                child: Text("-", style: TextStyle(color: Colors.white)),
+                onPressed: () {
+                  minus();
+                },
+                child: Text('-'),
               ),
             ],
           ),
+          SizedBox(height: 20),
           Row(
-            //1,2,3 가로줄줄
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.center, // 수직 정렬
+            crossAxisAlignment: CrossAxisAlignment.center, // 가로 정렬
             children: [
-              Container(
-                width: 75,
-                height: 75,
-                padding: EdgeInsets.all(10), // 내부 여백 추가
-                decoration: BoxDecoration(
-                  color: Colors.blue, // 배경색
-                  shape: BoxShape.circle, // 모서리 둥글게
-                ),
-                child: Text("3", style: TextStyle(color: Colors.white)),
+              ElevatedButton(
+                onPressed: () {
+                  number_make('1');
+                },
+                child: Text('1'),
               ),
-              Container(
-                width: 75,
-                height: 75,
-                padding: EdgeInsets.all(10), // 내부 여백 추가
-                decoration: BoxDecoration(
-                  color: Colors.blue, // 배경색
-                  shape: BoxShape.circle, // 모서리 둥글게
-                ),
-                child: Text("2", style: TextStyle(color: Colors.white)),
+              SizedBox(width: 20),
+              ElevatedButton(
+                onPressed: () {
+                  number_make('2');
+                },
+                child: Text('2'),
               ),
-              Container(
-                width: 75,
-                height: 75,
-                padding: EdgeInsets.all(10), // 내부 여백 추가
-                decoration: BoxDecoration(
-                  color: Colors.blue, // 배경색
-                  shape: BoxShape.circle, // 모서리 둥글게
-                ),
-                child: Text("1", style: TextStyle(color: Colors.white)),
+              SizedBox(width: 20),
+              ElevatedButton(
+                onPressed: () {
+                  number_make('3');
+                },
+                child: Text('3'),
               ),
-              Container(
-                width: 75,
-                height: 75,
-                padding: EdgeInsets.all(10), // 내부 여백 추가
-                decoration: BoxDecoration(
-                  color: Colors.blue, // 배경색
-                  shape: BoxShape.circle, // 모서리 둥글게
+              SizedBox(width: 20),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(255, 5, 14, 98),
                 ),
-                child: Text("+", style: TextStyle(color: Colors.white)),
+                onPressed: () {
+                  plus();
+                },
+                child: Text('+'),
               ),
             ],
           ),
+          SizedBox(height: 20),
           Row(
-            //7,8,9 가로줄
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.center, // 수직 정렬
+            crossAxisAlignment: CrossAxisAlignment.center, // 가로 정렬
             children: [
-              Container(
-                width: 75,
-                height: 75,
-                padding: EdgeInsets.all(10), // 내부 여백 추가
-                decoration: BoxDecoration(
-                  color: Colors.blue, // 배경색
-                  shape: BoxShape.circle, // 모서리 둥글게
-                ),
-                child: Text("", style: TextStyle(color: Colors.white)),
+              ElevatedButton(onPressed: () {}, child: Text('')),
+              SizedBox(width: 20),
+              ElevatedButton(
+                onPressed: () {
+                  number_make('0');
+                },
+                child: Text('0'),
               ),
-              Container(
-                width: 75,
-                height: 75,
-                padding: EdgeInsets.all(10), // 내부 여백 추가
-                decoration: BoxDecoration(
-                  color: Colors.blue, // 배경색
-                  shape: BoxShape.circle, // 모서리 둥글게
+              SizedBox(width: 20),
+              ElevatedButton(onPressed: () {}, child: Text('')),
+              SizedBox(width: 20),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(255, 5, 14, 98),
                 ),
-                child: Text("0", style: TextStyle(color: Colors.white)),
-              ),
-              Container(
-                width: 75,
-                height: 75,
-                padding: EdgeInsets.all(10), // 내부 여백 추가
-                decoration: BoxDecoration(
-                  color: Colors.blue, // 배경색
-                  shape: BoxShape.circle, // 모서리 둥글게
-                ),
-                child: Text(".", style: TextStyle(color: Colors.white)),
-              ),
-              Container(
-                width: 75,
-                height: 75,
-                padding: EdgeInsets.all(10), // 내부 여백 추가
-                decoration: BoxDecoration(
-                  color: Colors.blue, // 배경색
-                  shape: BoxShape.circle, // 모서리 둥글게
-                ),
-                child: Text("=", style: TextStyle(color: Colors.white)),
+                onPressed: () {
+                  enter();
+                },
+                child: Text('='),
               ),
             ],
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
