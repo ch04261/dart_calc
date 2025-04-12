@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:math_expressions/math_expressions.dart';
 import '../BUSINESS_LOGIC/business_logic.dart';
 
 class MyApp extends StatelessWidget {
@@ -22,7 +21,6 @@ class MyApp extends StatelessWidget {
             textStyle: TextStyle(
               fontSize: 40,
               fontWeight: FontWeight.bold, // 폰트 굵기 (볼드)
-              //fontStyle: FontStyle.italic, // 기울임꼴
               color: const Color.fromARGB(167, 10, 49, 110),
             ), // 텍스트 색상,
             fixedSize: Size(80, 80),
